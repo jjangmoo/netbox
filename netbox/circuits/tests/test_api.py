@@ -1,15 +1,14 @@
 from __future__ import unicode_literals
 
-from django.contrib.auth.models import User
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from circuits.constants import TERM_SIDE_A, TERM_SIDE_Z
-from circuits.models import Circuit, CircuitTermination, CircuitType, Provider
+from django.contrib.auth.models import User
+from django.urls import reverse
+
 from dcim.models import Site
-from extras.constants import GRAPH_TYPE_PROVIDER
-from extras.models import Graph
+from extras.models import Graph, GRAPH_TYPE_PROVIDER
+from circuits.models import Circuit, CircuitTermination, CircuitType, Provider, TERM_SIDE_A, TERM_SIDE_Z
 from users.models import Token
 from utilities.tests import HttpStatusMixin
 

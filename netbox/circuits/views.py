@@ -15,8 +15,7 @@ from utilities.views import (
     BulkDeleteView, BulkEditView, BulkImportView, ObjectDeleteView, ObjectEditView, ObjectListView,
 )
 from . import filters, forms, tables
-from .constants import TERM_SIDE_A, TERM_SIDE_Z
-from .models import Circuit, CircuitTermination, CircuitType, Provider
+from .models import Circuit, CircuitTermination, CircuitType, Provider, TERM_SIDE_A, TERM_SIDE_Z
 
 
 #
@@ -135,11 +134,7 @@ class CircuitTypeBulkDeleteView(PermissionRequiredMixin, BulkDeleteView):
 #
 
 class CircuitListView(ObjectListView):
-    queryset = Circuit.objects.select_related(
-        'provider', 'type', 'tenant'
-    ).prefetch_related(
-        'terminations__site', 'terminations__interface__device'
-    )
+    queryset = Circuit.objects.select_related('provider', 'type', 'tenant').prefetch_related('terminations__site')
     filter = filters.CircuitFilter
     filter_form = forms.CircuitFilterForm
     table = tables.CircuitTable

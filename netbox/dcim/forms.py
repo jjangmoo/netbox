@@ -1,12 +1,11 @@
 from __future__ import unicode_literals
 
+from mptt.forms import TreeNodeChoiceField
 import re
 
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.postgres.forms.array import SimpleArrayField
 from django.db.models import Count, Q
-from mptt.forms import TreeNodeChoiceField
 
 from extras.forms import CustomFieldForm, CustomFieldBulkEditForm, CustomFieldFilterForm
 from ipam.models import IPAddress
@@ -19,18 +18,16 @@ from utilities.forms import (
     SlugField, FilterTreeNodeMultipleChoiceField,
 )
 from virtualization.models import Cluster
-from .constants import (
-    CONNECTION_STATUS_CHOICES, CONNECTION_STATUS_CONNECTED, IFACE_FF_CHOICES, IFACE_FF_LAG, IFACE_ORDERING_CHOICES,
-    RACK_FACE_CHOICES, RACK_TYPE_CHOICES, RACK_WIDTH_CHOICES, RACK_WIDTH_19IN, RACK_WIDTH_23IN, STATUS_CHOICES,
-    SUBDEVICE_ROLE_CHILD, SUBDEVICE_ROLE_PARENT, SUBDEVICE_ROLE_CHOICES,
-)
 from .formfields import MACAddressFormField
 from .models import (
-    DeviceBay, DeviceBayTemplate, ConsolePort, ConsolePortTemplate, ConsoleServerPort, ConsoleServerPortTemplate,
-    Device, DeviceRole, DeviceType, Interface, InterfaceConnection, InterfaceTemplate, Manufacturer, InventoryItem,
-    Platform, PowerOutlet, PowerOutletTemplate, PowerPort, PowerPortTemplate, Rack, RackGroup, RackReservation,
-    RackRole, Region, Site,
+    DeviceBay, DeviceBayTemplate, CONNECTION_STATUS_CHOICES, CONNECTION_STATUS_CONNECTED, ConsolePort,
+    ConsolePortTemplate, ConsoleServerPort, ConsoleServerPortTemplate, Device, DeviceRole, DeviceType, Interface,
+    IFACE_FF_CHOICES, IFACE_FF_LAG, IFACE_ORDERING_CHOICES, InterfaceConnection, InterfaceTemplate, Manufacturer,
+    InventoryItem, Platform, PowerOutlet, PowerOutletTemplate, PowerPort, PowerPortTemplate, RACK_FACE_CHOICES,
+    RACK_TYPE_CHOICES, RACK_WIDTH_CHOICES, Rack, RackGroup, RackReservation, RackRole, RACK_WIDTH_19IN, RACK_WIDTH_23IN,
+    Region, Site, STATUS_CHOICES, SUBDEVICE_ROLE_CHILD, SUBDEVICE_ROLE_PARENT, SUBDEVICE_ROLE_CHOICES,
 )
+
 
 DEVICE_BY_PK_RE = '{\d+\}'
 
@@ -379,11 +376,10 @@ class RackFilterForm(BootstrapMixin, CustomFieldFilterForm):
 
 class RackReservationForm(BootstrapMixin, forms.ModelForm):
     units = SimpleArrayField(forms.IntegerField(), widget=ArrayFieldSelectMultiple(attrs={'size': 10}))
-    user = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
 
     class Meta:
         model = RackReservation
-        fields = ['units', 'user', 'description']
+        fields = ['units', 'description']
 
     def __init__(self, *args, **kwargs):
 
@@ -413,15 +409,6 @@ class RackReservationFilterForm(BootstrapMixin, forms.Form):
         label='Rack group',
         null_option=(0, 'None')
     )
-
-
-class RackReservationBulkEditForm(BootstrapMixin, BulkEditForm):
-    pk = forms.ModelMultipleChoiceField(queryset=RackReservation.objects.all(), widget=forms.MultipleHiddenInput)
-    user = forms.ModelChoiceField(queryset=User.objects.order_by('username'), required=False)
-    description = forms.CharField(max_length=100, required=False)
-
-    class Meta:
-        nullable_fields = []
 
 
 #
@@ -966,7 +953,6 @@ class ChildDeviceCSVForm(BaseDeviceCSVForm):
     cluster = forms.ModelChoiceField(
         queryset=Cluster.objects.all(),
         to_field_name='name',
-        required=False,
         help_text='Virtualization cluster',
         error_messages={
             'invalid_choice': 'Invalid cluster name.',
